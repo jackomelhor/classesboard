@@ -1,0 +1,6 @@
+window.CLASSBOARD_CONFIG = {
+  SUPABASE_URL: 'https://SEU-PROJETO.supabase.co',
+  SUPABASE_ANON_KEY: 'COLE_AQUI_SUA_ANON_KEY',
+  APP_NAME: 'ClassBoard',
+  APP_VERSION: 'v0.4',
+};
