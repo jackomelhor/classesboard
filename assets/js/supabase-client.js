@@ -1,7 +1,7 @@
 (function () {
   const cfg = window.CLASSBOARD_CONFIG || {};
   const hasValidConfig = typeof cfg.SUPABASE_URL === 'string'
-    && cfg.SUPABASE_URL.startsWith('https://wtnvkvbotzijzwkssxga.supabase.com')
+    && cfg.SUPABASE_URL.startsWith('https://wtnvkvbotzijzwkssxga.supabase.co')
     && typeof cfg.SUPABASE_ANON_KEY === 'string'
     && !cfg.SUPABASE_ANON_KEY.includes('sb_publishable_3jxlRnppR1mJBi4TaR4JTw_EI0_O6xH');
 
