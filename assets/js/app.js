@@ -19,6 +19,48 @@ const state = {
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
+
+const LABELS = {
+  taskType: { prova: 'Prova', trabalho: 'Trabalho', atividade: 'Atividade', apresentacao: 'Apresentação', estudo: 'Estudo' },
+  priority: { baixa: 'Baixa', media: 'Média', alta: 'Alta' },
+  status: { pendente: 'Pendente', andamento: 'Em andamento', concluido: 'Concluída' },
+  role: { owner: 'Responsável', admin: 'Administrador', member: 'Membro' },
+  workspaceType: { grupo: 'Grupo', turma: 'Turma', individual: 'Individual' },
+  materialType: { link: 'Link', pdf: 'PDF', slides: 'Slides', documento: 'Documento', video: 'Vídeo' },
+};
+
+function labelFor(group, value, fallback = '—') {
+  return LABELS[group]?.[value] || value || fallback;
+}
+
+function setSectionMessage(selector, title, text) {
+  const host = $(selector);
+  if (!host) return;
+  host.innerHTML = `<div class="empty-state"><strong>${escapeHtml(title)}</strong><span>${escapeHtml(text)}</span></div>`;
+}
+
+function setWorkspaceDependents() {
+  const hasWorkspace = Boolean(getCurrentWorkspace());
+  ['#taskForm input', '#taskForm textarea', '#taskForm select', '#announcementForm input', '#announcementForm textarea', '#announcementForm select', '#materialForm input', '#materialForm textarea', '#materialForm select']
+    .forEach((selector) => {
+      $$(selector).forEach((el) => {
+        if (['taskId', 'announcementId', 'materialId'].includes(el.id)) return;
+        el.disabled = !hasWorkspace;
+      });
+    });
+
+  ['#taskForm button[type="submit"]', '#announcementForm button[type="submit"]', '#materialForm button[type="submit"]']
+    .forEach((selector) => {
+      const button = $(selector);
+      if (button) button.disabled = !hasWorkspace;
+    });
+
+  ['taskForm', 'announcementForm', 'materialForm'].forEach((id) => {
+    const form = document.getElementById(id);
+    if (form) form.dataset.locked = hasWorkspace ? 'false' : 'true';
+  });
+}
+
 function escapeHtml(value = '') {
   return String(value)
     .replaceAll('&', '&amp;')
@@ -239,7 +281,7 @@ async function loadWorkspaces() {
   if (error) throw error;
 
   state.workspaces = (data || []).map((row) => ({ ...(row.workspaces || {}), my_role: row.role })).filter((row) => row.id);
-  state.workspaces.sort((a, b) => String(a.created_at || '').localeCompare(String(b.created_at || '')));
+  state.workspaces.sort((a, b) => String(b.updated_at || b.created_at || '').localeCompare(String(a.updated_at || a.created_at || '')));
 
   if (!state.currentWorkspaceId || !state.workspaces.some((w) => w.id === state.currentWorkspaceId)) {
     state.currentWorkspaceId = state.workspaces[0]?.id || null;
@@ -349,8 +391,8 @@ function renderTopbar() {
   const workspace = getCurrentWorkspace();
   $('#workspaceTitle').textContent = workspace?.name || 'Nenhum workspace selecionado';
   $('#workspaceSubtitle').textContent = workspace
-    ? `${workspace.school_name || 'Sem escola'} · ${workspace.type} · seu papel: ${workspace.my_role}`
-    : 'Crie um workspace ou entre com um código para começar.';
+    ? `${workspace.school_name || 'Sem escola'} · ${labelFor('workspaceType', workspace.type)} · ${labelFor('role', workspace.my_role)}`
+    : 'Uma base organizada para acompanhar tarefas, avisos, materiais e pessoas no mesmo espaço.';
   $('#sidebarUserName').textContent = state.profile?.full_name || '—';
   $('#sidebarUserEmail').textContent = state.profile?.email || state.user?.email || '—';
 
@@ -414,11 +456,11 @@ function renderDashboard() {
   snapshot.innerHTML = `
     <div class="list-item">
       <div class="list-item-title">${escapeHtml(workspace.name)}</div>
-      <div class="subtle">${escapeHtml(workspace.school_name || 'Sem escola')} · ${escapeHtml(workspace.type)}</div>
+      <div class="subtle">${escapeHtml(workspace.school_name || 'Sem escola')} · ${escapeHtml(labelFor('workspaceType', workspace.type))}</div>
     </div>
     <div class="list-item">
       <div class="list-item-title">Papel atual</div>
-      <div class="subtle">${escapeHtml(workspace.my_role || 'member')}</div>
+      <div class="subtle">${escapeHtml(labelFor('role', workspace.my_role || 'member'))}</div>
     </div>
     <div class="list-item">
       <div class="list-item-title">Código de convite</div>
@@ -440,7 +482,7 @@ function renderMiniTaskList(selector, tasks, emptyText) {
       <div class="list-item">
         <div class="list-item-title">${escapeHtml(task.title)}</div>
         <div class="subtle">${escapeHtml(task.subject || 'Sem matéria')} · ${formatDate(task.due_date)}</div>
-        <div class="meta-line"><span class="pill ${task.priority === 'alta' ? 'high' : task.priority === 'media' ? 'medium' : 'low'}">${escapeHtml(task.priority)}</span><span class="pill ${due < 0 ? 'overdue' : 'info'}">${dueText}</span></div>
+        <div class="meta-line"><span class="pill ${task.priority === 'alta' ? 'high' : task.priority === 'media' ? 'medium' : 'low'}">${escapeHtml(labelFor('priority', task.priority))}</span><span class="pill ${due < 0 ? 'overdue' : 'info'}">${dueText}</span></div>
       </div>
     `;
   }).join('');
@@ -463,13 +505,13 @@ function renderAnnouncementMiniList(selector, items, emptyText) {
 function renderTasks() {
   const host = $('#taskList');
   if (!getCurrentWorkspace()) {
-    host.innerHTML = '<div class="empty-state">Selecione ou crie um workspace para começar.</div>';
+    setSectionMessage('#taskList', 'Sem workspace ativo', 'As tarefas passam a aparecer assim que houver um workspace selecionado.');
     return;
   }
 
   const tasks = getFilteredTasks();
   if (!tasks.length) {
-    host.innerHTML = '<div class="empty-state">Nenhuma tarefa encontrada para os filtros atuais.</div>';
+    setSectionMessage('#taskList', 'Nada por aqui', 'Os filtros atuais não retornaram tarefas no momento.');
     return;
   }
 
@@ -494,14 +536,14 @@ function renderTasks() {
             <div class="subtle">${escapeHtml(task.subject || 'Sem matéria')} · ${formatDate(task.due_date)}</div>
           </div>
           <div class="meta-line">
-            <span class="pill ${task.priority === 'alta' ? 'high' : task.priority === 'media' ? 'medium' : 'low'}">${escapeHtml(task.priority)}</span>
+            <span class="pill ${task.priority === 'alta' ? 'high' : task.priority === 'media' ? 'medium' : 'low'}">${escapeHtml(labelFor('priority', task.priority))}</span>
             <span class="pill ${due < 0 ? 'overdue' : 'info'}">${dueText}</span>
           </div>
         </div>
         <p>${escapeHtml(task.description || 'Sem descrição.')}</p>
         <div class="meta-line">
-          <span class="pill info">${escapeHtml(task.task_type)}</span>
-          <span class="pill info">${escapeHtml(task.status)}</span>
+          <span class="pill info">${escapeHtml(labelFor('taskType', task.task_type))}</span>
+          <span class="pill info">${escapeHtml(labelFor('status', task.status))}</span>
           <span class="pill info">${escapeHtml(displayNameByUserId(task.author_id))}</span>
         </div>
         ${checklist}
@@ -552,11 +594,11 @@ function renderAgenda() {
 function renderAnnouncements() {
   const host = $('#announcementList');
   if (!getCurrentWorkspace()) {
-    host.innerHTML = '<div class="empty-state">Selecione um workspace para publicar avisos.</div>';
+    setSectionMessage('#announcementList', 'Sem workspace ativo', 'Os avisos ficam disponíveis dentro de cada workspace.');
     return;
   }
   if (!state.announcements.length) {
-    host.innerHTML = '<div class="empty-state">Nenhum aviso publicado até agora.</div>';
+    setSectionMessage('#announcementList', 'Nenhum aviso ainda', 'Quando surgirem comunicados, eles aparecerão aqui.');
     return;
   }
   host.innerHTML = state.announcements.map((item) => `
@@ -582,11 +624,11 @@ function renderAnnouncements() {
 function renderMaterials() {
   const host = $('#materialList');
   if (!getCurrentWorkspace()) {
-    host.innerHTML = '<div class="empty-state">Selecione um workspace para salvar materiais.</div>';
+    setSectionMessage('#materialList', 'Sem workspace ativo', 'Os materiais ficam organizados dentro de cada workspace.');
     return;
   }
   if (!state.materials.length) {
-    host.innerHTML = '<div class="empty-state">Nenhum material cadastrado.</div>';
+    setSectionMessage('#materialList', 'Nenhum material ainda', 'Links, slides, PDFs e referências aparecem aqui.');
     return;
   }
   host.innerHTML = state.materials.map((item) => `
@@ -594,7 +636,7 @@ function renderMaterials() {
       <div class="task-card-head">
         <div>
           <div class="task-title">${escapeHtml(item.title)}</div>
-          <div class="subtle">${escapeHtml(item.material_type)} · ${escapeHtml(displayNameByUserId(item.author_id))}</div>
+          <div class="subtle">${escapeHtml(labelFor('materialType', item.material_type))} · ${escapeHtml(displayNameByUserId(item.author_id))}</div>
         </div>
         <span class="pill info">${formatDate(item.created_at, true)}</span>
       </div>
@@ -615,7 +657,7 @@ function renderMembers() {
   const canManage = canManageWorkspace();
 
   if (!getCurrentWorkspace()) {
-    host.innerHTML = '<div class="empty-state">Nenhum workspace selecionado.</div>';
+    setSectionMessage('#memberList', 'Sem workspace ativo', 'A lista de membros aparece quando houver um workspace selecionado.');
     select.innerHTML = '<option value="">Nenhum membro</option>';
     role.disabled = true;
     $('#removeMemberBtn').disabled = true;
@@ -630,13 +672,13 @@ function renderMembers() {
               <div class="task-title">${escapeHtml(member.full_name)}</div>
               <div class="subtle">${escapeHtml(member.email)}</div>
             </div>
-            <span class="pill info">${escapeHtml(member.role)}</span>
+            <span class="pill info">${escapeHtml(labelFor('role', member.role))}</span>
           </div>
         </article>
       `).join('')
     : '<div class="empty-state">Nenhum membro encontrado.</div>';
 
-  select.innerHTML = state.members.map((member) => `<option value="${escapeHtml(member.id)}">${escapeHtml(member.full_name)} · ${escapeHtml(member.role)}</option>`).join('');
+  select.innerHTML = state.members.length ? state.members.map((member) => `<option value="${escapeHtml(member.id)}">${escapeHtml(member.full_name)} · ${escapeHtml(labelFor('role', member.role))}</option>`).join('') : '<option value="">Nenhum membro</option>';
   select.disabled = !canManage;
   role.disabled = !canManage;
   $('#removeMemberBtn').disabled = !canManage;
@@ -650,14 +692,14 @@ function renderMembers() {
 function renderWorkspaceView() {
   const host = $('#workspaceList');
   if (!state.workspaces.length) {
-    host.innerHTML = '<div class="empty-state">Nenhum workspace encontrado.</div>';
+    setSectionMessage('#workspaceList', 'Nenhum espaço disponível', 'Assim que o primeiro workspace surgir, ele aparecerá aqui.');
   } else {
     host.innerHTML = state.workspaces.map((ws) => `
       <article class="workspace-card ${ws.id === state.currentWorkspaceId ? 'active-card' : ''}">
         <div class="task-card-head">
           <div>
             <div class="task-title">${escapeHtml(ws.name)}</div>
-            <div class="subtle">${escapeHtml(ws.school_name || 'Sem escola')} · ${escapeHtml(ws.type)} · seu papel: ${escapeHtml(ws.my_role)}</div>
+            <div class="subtle">${escapeHtml(ws.school_name || 'Sem escola')} · ${escapeHtml(labelFor('workspaceType', ws.type))} · ${escapeHtml(labelFor('role', ws.my_role))}</div>
           </div>
           <button class="ghost-btn" data-select-workspace="${escapeHtml(ws.id)}">Abrir</button>
         </div>
@@ -696,6 +738,7 @@ function renderAll() {
   renderMembers();
   renderWorkspaceView();
   renderAccount();
+  setWorkspaceDependents();
 }
 
 function fillTaskForm(taskId) {
@@ -1266,7 +1309,7 @@ async function bootstrapAuthenticated(session) {
     await refreshAllData();
     switchView(state.currentView);
   } catch (error) {
-    toast(error.message || 'Não foi possível carregar seus dados.', 'danger');
+    toast('Não foi possível carregar sua área agora.', 'danger');
   }
 }
 
@@ -1276,7 +1319,7 @@ async function initialize() {
 
   if (!state.ready) {
     authScreen();
-    toast(state.configError || 'Serviço temporariamente indisponível.', 'warning');
+    toast('O serviço está temporariamente indisponível no momento.', 'warning');
     return;
   }
 
@@ -1303,6 +1346,6 @@ async function initialize() {
 window.addEventListener('DOMContentLoaded', () => {
   initialize().catch((error) => {
     console.error(error);
-    toast(error.message || 'Falha inesperada na inicialização.', 'danger');
+    toast('O aplicativo encontrou um erro inesperado na inicialização.', 'danger');
   });
 });
