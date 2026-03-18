@@ -3,500 +3,577 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ClassBoard v0.4</title>
-  <meta name="description" content="ClassBoard v0.4 com Supabase, autenticação e banco de dados real.">
+  <title>ClassBoard</title>
+  <meta name="description" content="ClassBoard: organização escolar colaborativa com tarefas, agenda, avisos e materiais em um só lugar.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-  <div id="appRoot" class="page-shell">
-    <section id="authScreen" class="auth-screen active">
-      <div class="auth-background"></div>
-      <div class="auth-layout">
-        <aside class="auth-rail">
-          <div class="auth-logo">
-            <div class="auth-logo-mark">CB</div>
+  <div id="toastContainer" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <section id="authScreen" class="auth-screen active">
+    <div class="auth-shell">
+      <aside class="auth-visual">
+        <div class="auth-brand">
+          <div class="brand-mark large">CB</div>
+          <div>
+            <p class="eyebrow light">ClassBoard</p>
+            <h1>Organização escolar clara, colaborativa e bonita.</h1>
+            <p class="auth-copy">Reúna tarefas, provas, materiais, membros e avisos em um único espaço por turma, grupo ou rotina individual.</p>
           </div>
+        </div>
 
-          <button class="rail-item active" data-auth-mode="signin">
-            <span class="rail-icon">↪</span>
-            <span>Sign In</span>
-          </button>
-
-          <button class="rail-item" data-auth-mode="signup">
-            <span class="rail-icon">＋</span>
-            <span>Sign Up</span>
-          </button>
-        </aside>
-
-        <div class="auth-hero-card">
-          <div class="hero-badge">ClassBoard v0.4</div>
-          <h1 id="authHeroTitle">Sign In Now.</h1>
-          <p id="authHeroSubtitle">Acesse sua turma, seus prazos e o painel colaborativo em um só lugar.</p>
-
-          <div class="hero-illustration" aria-hidden="true">
-            <div class="music-dot one"></div>
-            <div class="music-dot two"></div>
-            <div class="music-dot three"></div>
-            <div class="hero-orb orb-a"></div>
-            <div class="hero-orb orb-b"></div>
-            <div class="hero-desk"></div>
-            <div class="hero-person">
-              <div class="person-head"></div>
-              <div class="person-hair"></div>
-              <div class="person-body"></div>
-              <div class="person-arm arm-left"></div>
-              <div class="person-arm arm-right"></div>
+        <div class="hero-preview">
+          <div class="preview-window">
+            <div class="preview-topbar"></div>
+            <div class="preview-grid">
+              <div class="preview-card tall blue"></div>
+              <div class="preview-card soft"></div>
+              <div class="preview-card"></div>
+              <div class="preview-card wide green"></div>
             </div>
           </div>
-        </div>
 
-        <section class="auth-form-card">
-          <div class="auth-form-head">
-            <p class="auth-kicker" id="authKicker">Já tem uma conta? <button class="inline-switch" data-auth-mode="signin">Entrar</button></p>
-            <h2 id="authFormTitle">Entrar</h2>
-            <p id="authFormSubtitle">Use seu email e senha para acessar sua área.</p>
-          </div>
-
-          <form id="signInForm" class="auth-form active">
-            <label>
-              <span>Email</span>
-              <div class="input-wrap">
-                <input id="signInEmail" type="email" placeholder="voce@email.com" required>
-                <span class="input-icon">✉</span>
-              </div>
-            </label>
-
-            <label>
-              <span>Senha</span>
-              <div class="input-wrap">
-                <input id="signInPassword" type="password" placeholder="••••••••••" minlength="6" required>
-                <span class="input-icon">🔒</span>
-              </div>
-            </label>
-
-            <button class="primary-btn auth-submit" type="submit">Entrar</button>
-          </form>
-
-          <form id="signUpForm" class="auth-form">
-            <label>
-              <span>Nome completo</span>
-              <div class="input-wrap">
-                <input id="signUpName" type="text" placeholder="Seu nome" required>
-                <span class="input-icon">👤</span>
-              </div>
-            </label>
-
-            <label>
-              <span>Email</span>
-              <div class="input-wrap">
-                <input id="signUpEmail" type="email" placeholder="voce@email.com" required>
-                <span class="input-icon">✉</span>
-              </div>
-            </label>
-
-            <label>
-              <span>Senha</span>
-              <div class="input-wrap">
-                <input id="signUpPassword" type="password" placeholder="Mínimo 6 caracteres" minlength="6" required>
-                <span class="input-icon">🔐</span>
-              </div>
-            </label>
-
-            <button class="primary-btn auth-submit" type="submit">Criar conta</button>
-          </form>
-
-          <section id="authAlerts" class="alerts auth-alerts"></section>
-
-          <div class="auth-note">
-            <strong>Importante:</strong>
-            <span>No Supabase de teste, deixe a confirmação de email desligada para o fluxo ficar simples.</span>
-          </div>
-        </section>
-      </div>
-    </section>
-
-    <section id="appScreen" class="app-screen">
-      <aside class="sidebar">
-        <div class="brand-card">
-          <div class="brand-mark">CB</div>
-          <div>
-            <h1>ClassBoard</h1>
-            <p>Workspace escolar com Supabase</p>
-          </div>
-        </div>
-
-        <nav class="nav-menu" aria-label="Principal">
-          <button class="nav-link active" data-view="dashboard">Dashboard</button>
-          <button class="nav-link" data-view="tasks">Tarefas</button>
-          <button class="nav-link" data-view="agenda">Agenda</button>
-          <button class="nav-link" data-view="members">Membros</button>
-          <button class="nav-link" data-view="workspace">Workspace</button>
-          <button class="nav-link" data-view="settings">Configurações</button>
-        </nav>
-
-        <div class="sidebar-info">
-          <h3>Ambiente real</h3>
-          <p>Dados persistidos no Supabase com autenticação, regras e compartilhamento entre usuários.</p>
+          <div class="floating-chip chip-a">Prazos organizados</div>
+          <div class="floating-chip chip-b">Turmas e grupos</div>
+          <div class="floating-chip chip-c">Visão compartilhada</div>
         </div>
       </aside>
 
-      <main class="main-content">
-        <header class="topbar">
+      <div class="auth-panel">
+        <div class="auth-tabs">
+          <button class="auth-tab active" data-auth-mode="signin">Entrar</button>
+          <button class="auth-tab" data-auth-mode="signup">Criar conta</button>
+          <button class="auth-tab" data-auth-mode="recover">Recuperar acesso</button>
+        </div>
+
+        <div class="auth-head">
+          <p class="eyebrow" id="authEyebrow">Bem-vindo de volta</p>
+          <h2 id="authTitle">Entre na sua conta</h2>
+          <p id="authSubtitle">Acesse seus workspaces, tarefas e lembretes com poucos cliques.</p>
+        </div>
+
+        <form id="signInForm" class="auth-form active">
+          <label>
+            <span>Email</span>
+            <input id="signInEmail" type="email" autocomplete="email" placeholder="voce@email.com" required>
+          </label>
+          <label>
+            <span>Senha</span>
+            <input id="signInPassword" type="password" autocomplete="current-password" placeholder="Sua senha" minlength="6" required>
+          </label>
+          <button class="primary-btn full" type="submit">Entrar</button>
+        </form>
+
+        <form id="signUpForm" class="auth-form">
+          <label>
+            <span>Nome completo</span>
+            <input id="signUpName" type="text" autocomplete="name" placeholder="Seu nome" required>
+          </label>
+          <label>
+            <span>Email</span>
+            <input id="signUpEmail" type="email" autocomplete="email" placeholder="voce@email.com" required>
+          </label>
+          <label>
+            <span>Senha</span>
+            <input id="signUpPassword" type="password" autocomplete="new-password" placeholder="Mínimo de 6 caracteres" minlength="6" required>
+          </label>
+          <button class="primary-btn full" type="submit">Criar conta</button>
+        </form>
+
+        <form id="recoverForm" class="auth-form">
+          <label>
+            <span>Email</span>
+            <input id="recoverEmail" type="email" autocomplete="email" placeholder="voce@email.com" required>
+          </label>
+          <button class="primary-btn full" type="submit">Enviar link de recuperação</button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <section id="appScreen" class="app-screen">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-mark">CB</div>
+        <div>
+          <h1>ClassBoard</h1>
+          <p>Organização escolar colaborativa</p>
+        </div>
+      </div>
+
+      <nav class="nav-menu" aria-label="Principal">
+        <button class="nav-link active" data-view="dashboard">Dashboard</button>
+        <button class="nav-link" data-view="tasks">Tarefas</button>
+        <button class="nav-link" data-view="agenda">Agenda</button>
+        <button class="nav-link" data-view="announcements">Avisos</button>
+        <button class="nav-link" data-view="materials">Materiais</button>
+        <button class="nav-link" data-view="members">Membros</button>
+        <button class="nav-link" data-view="workspace">Workspace</button>
+        <button class="nav-link" data-view="account">Conta</button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="mini-card">
+          <span class="mini-label">Usuário</span>
+          <strong id="sidebarUserName">—</strong>
+          <span id="sidebarUserEmail">—</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Workspace ativo</p>
+          <h2 id="workspaceTitle">ClassBoard</h2>
+          <p class="subtle" id="workspaceSubtitle">Seu painel de organização escolar.</p>
+        </div>
+
+        <div class="topbar-actions">
+          <select id="workspaceSwitcher" class="inline-select"></select>
+          <button class="ghost-btn" id="refreshBtn">Atualizar</button>
+          <button class="ghost-btn" id="signOutBtn">Sair</button>
+        </div>
+      </header>
+
+      <section class="view active" id="view-dashboard">
+        <div class="hero-panel">
           <div>
-            <p class="eyebrow">Organização escolar colaborativa</p>
-            <h2 id="workspaceTitle">Carregando workspace...</h2>
-            <p class="subtle" id="workspaceSubtitle">Carregando dados do banco...</p>
-          </div>
-
-          <div class="topbar-actions">
-            <select id="workspaceSwitcher" class="inline-select"></select>
-            <button class="ghost-btn" id="refreshBtn">Atualizar</button>
-            <button class="ghost-btn" id="signOutBtn">Sair</button>
-          </div>
-        </header>
-
-        <section id="alerts" class="alerts"></section>
-
-        <section class="view active" id="view-dashboard">
-          <div class="hero-card dashboard-hero">
-            <div>
-              <p class="hero-tag">Hoje</p>
-              <h3 id="todaySummary">Sem urgências</h3>
-              <p id="todayDetails">Crie ou selecione um workspace para começar.</p>
-            </div>
-            <div class="hero-stats">
-              <div class="metric-box">
-                <span>Tarefas hoje</span>
-                <strong id="metricToday">0</strong>
-              </div>
-              <div class="metric-box">
-                <span>Atrasadas</span>
-                <strong id="metricOverdue">0</strong>
-              </div>
-              <div class="metric-box">
-                <span>Membros</span>
-                <strong id="metricMembers">0</strong>
-              </div>
+            <span class="hero-pill">Hoje</span>
+            <h3 id="dashboardHeadline">Tudo sob controle</h3>
+            <p id="dashboardSummary">Crie um workspace ou entre em um código para começar.</p>
+            <div class="button-row top-gap">
+              <button class="primary-btn" data-open-view="tasks">Nova tarefa</button>
+              <button class="ghost-btn" data-open-view="workspace">Gerenciar workspace</button>
             </div>
           </div>
-
-          <div class="dashboard-grid">
-            <article class="card">
-              <div class="card-head">
-                <h3>Próximas provas</h3>
-                <span class="badge info" id="examsBadge">0 itens</span>
-              </div>
-              <div id="dashboardExams" class="list-stack"></div>
+          <div class="hero-metrics">
+            <article class="metric-card">
+              <span>Para hoje</span>
+              <strong id="metricToday">0</strong>
             </article>
-
-            <article class="card">
-              <div class="card-head">
-                <h3>Pendências</h3>
-                <span class="badge warning" id="pendingBadge">0 itens</span>
-              </div>
-              <div id="dashboardPending" class="list-stack"></div>
+            <article class="metric-card">
+              <span>Atrasadas</span>
+              <strong id="metricOverdue">0</strong>
             </article>
-
-            <article class="card">
-              <div class="card-head">
-                <h3>Resumo da semana</h3>
-              </div>
-              <div class="summary-grid">
-                <div class="summary-item">
-                  <span>Concluídas</span>
-                  <strong id="summaryDone">0</strong>
-                </div>
-                <div class="summary-item">
-                  <span>Pendentes</span>
-                  <strong id="summaryOpen">0</strong>
-                </div>
-                <div class="summary-item">
-                  <span>Provas</span>
-                  <strong id="summaryExams">0</strong>
-                </div>
-              </div>
+            <article class="metric-card">
+              <span>Membros</span>
+              <strong id="metricMembers">0</strong>
             </article>
-
-            <article class="card">
-              <div class="card-head">
-                <h3>Visão do workspace</h3>
-              </div>
-              <div id="workspaceSnapshot" class="list-stack"></div>
+            <article class="metric-card">
+              <span>Avisos</span>
+              <strong id="metricAnnouncements">0</strong>
             </article>
           </div>
-        </section>
+        </div>
 
-        <section class="view" id="view-tasks">
-          <div class="section-head">
+        <div class="dashboard-grid">
+          <article class="card span-2">
+            <div class="card-head">
+              <h3>Resumo inteligente</h3>
+              <span class="badge info" id="weekBadge">Semana</span>
+            </div>
+            <div class="summary-grid">
+              <div class="summary-item">
+                <span>Concluídas</span>
+                <strong id="summaryDone">0</strong>
+              </div>
+              <div class="summary-item">
+                <span>Pendentes</span>
+                <strong id="summaryOpen">0</strong>
+              </div>
+              <div class="summary-item">
+                <span>Provas</span>
+                <strong id="summaryExams">0</strong>
+              </div>
+              <div class="summary-item">
+                <span>Materiais</span>
+                <strong id="summaryMaterials">0</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <h3>Próximas entregas</h3>
+              <span class="badge info" id="nextTasksBadge">0</span>
+            </div>
+            <div id="dashboardNextTasks" class="list-stack"></div>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <h3>Em atenção</h3>
+              <span class="badge warning" id="attentionBadge">0</span>
+            </div>
+            <div id="dashboardAttention" class="list-stack"></div>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <h3>Avisos em destaque</h3>
+            </div>
+            <div id="dashboardAnnouncements" class="list-stack"></div>
+          </article>
+
+          <article class="card">
+            <div class="card-head">
+              <h3>Visão geral</h3>
+            </div>
+            <div id="workspaceSnapshot" class="list-stack"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="view" id="view-tasks">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Gestão de tarefas</p>
+            <h3>Tarefas do workspace</h3>
+          </div>
+          <button class="ghost-btn" id="taskFormReset">Limpar formulário</button>
+        </div>
+
+        <div class="card form-card">
+          <form id="taskForm" class="form-grid">
+            <input type="hidden" id="taskId">
             <div>
-              <p class="eyebrow">Gestão de tarefas</p>
-              <h3>Tarefas do workspace</h3>
+              <label for="taskTitle">Título</label>
+              <input id="taskTitle" required placeholder="Ex.: Prova de matemática">
             </div>
-          </div>
-
-          <div class="card form-card">
-            <form id="taskForm" class="form-grid">
-              <input type="hidden" id="taskId">
-              <div>
-                <label for="taskTitle">Título</label>
-                <input id="taskTitle" required placeholder="Ex.: Prova de matemática">
-              </div>
-              <div>
-                <label for="taskSubject">Matéria</label>
-                <input id="taskSubject" placeholder="Ex.: Matemática">
-              </div>
-              <div>
-                <label for="taskType">Tipo</label>
-                <select id="taskType">
-                  <option value="prova">Prova</option>
-                  <option value="trabalho">Trabalho</option>
-                  <option value="atividade">Atividade</option>
-                  <option value="apresentacao">Apresentação</option>
-                  <option value="estudo">Estudo</option>
-                </select>
-              </div>
-              <div>
-                <label for="taskPriority">Prioridade</label>
-                <select id="taskPriority">
-                  <option value="baixa">Baixa</option>
-                  <option value="media" selected>Média</option>
-                  <option value="alta">Alta</option>
-                </select>
-              </div>
-              <div>
-                <label for="taskStatus">Status</label>
-                <select id="taskStatus">
-                  <option value="pendente">Pendente</option>
-                  <option value="andamento">Em andamento</option>
-                  <option value="concluido">Concluído</option>
-                </select>
-              </div>
-              <div>
-                <label for="taskDueDate">Prazo</label>
-                <input id="taskDueDate" type="date" required>
-              </div>
-              <div class="full-span">
-                <label for="taskDescription">Descrição</label>
-                <textarea id="taskDescription" rows="3" placeholder="Escopo, orientações e detalhes."></textarea>
-              </div>
-              <div class="full-span">
-                <label for="taskChecklist">Checklist (uma linha por item)</label>
-                <textarea id="taskChecklist" rows="4" placeholder="Pesquisar conteúdo&#10;Montar slides&#10;Revisar entrega"></textarea>
-              </div>
-              <div class="full-span form-actions">
-                <button class="primary-btn" type="submit">Salvar tarefa</button>
-                <button class="ghost-btn" id="taskFormReset" type="button">Limpar</button>
-              </div>
-            </form>
-          </div>
-
-          <div class="card filters-card">
-            <div class="filters-grid">
-              <div>
-                <label for="filterStatus">Status</label>
-                <select id="filterStatus">
-                  <option value="">Todos</option>
-                  <option value="pendente">Pendente</option>
-                  <option value="andamento">Em andamento</option>
-                  <option value="concluido">Concluído</option>
-                </select>
-              </div>
-              <div>
-                <label for="filterPriority">Prioridade</label>
-                <select id="filterPriority">
-                  <option value="">Todas</option>
-                  <option value="alta">Alta</option>
-                  <option value="media">Média</option>
-                  <option value="baixa">Baixa</option>
-                </select>
-              </div>
-              <div>
-                <label for="filterType">Tipo</label>
-                <select id="filterType">
-                  <option value="">Todos</option>
-                  <option value="prova">Prova</option>
-                  <option value="trabalho">Trabalho</option>
-                  <option value="atividade">Atividade</option>
-                  <option value="apresentacao">Apresentação</option>
-                  <option value="estudo">Estudo</option>
-                </select>
-              </div>
-              <div>
-                <label for="filterSearch">Buscar</label>
-                <input id="filterSearch" placeholder="Título ou matéria">
-              </div>
-            </div>
-          </div>
-
-          <div id="taskList" class="stack-list"></div>
-        </section>
-
-        <section class="view" id="view-agenda">
-          <div class="section-head">
             <div>
-              <p class="eyebrow">Próximos 30 dias</p>
-              <h3>Agenda</h3>
+              <label for="taskSubject">Matéria</label>
+              <input id="taskSubject" placeholder="Ex.: Matemática">
             </div>
-          </div>
-          <div class="card">
-            <div id="agendaList" class="agenda-stack"></div>
-          </div>
-        </section>
-
-        <section class="view" id="view-members">
-          <div class="section-head">
             <div>
-              <p class="eyebrow">Colaboração</p>
-              <h3>Membros do workspace</h3>
+              <label for="taskType">Tipo</label>
+              <select id="taskType">
+                <option value="prova">Prova</option>
+                <option value="trabalho">Trabalho</option>
+                <option value="atividade">Atividade</option>
+                <option value="apresentacao">Apresentação</option>
+                <option value="estudo">Estudo</option>
+              </select>
             </div>
-          </div>
+            <div>
+              <label for="taskPriority">Prioridade</label>
+              <select id="taskPriority">
+                <option value="baixa">Baixa</option>
+                <option value="media">Média</option>
+                <option value="alta">Alta</option>
+              </select>
+            </div>
+            <div>
+              <label for="taskStatus">Status</label>
+              <select id="taskStatus">
+                <option value="pendente">Pendente</option>
+                <option value="andamento">Em andamento</option>
+                <option value="concluido">Concluído</option>
+              </select>
+            </div>
+            <div>
+              <label for="taskDueDate">Data</label>
+              <input id="taskDueDate" type="date" required>
+            </div>
+            <div class="span-2">
+              <label for="taskDescription">Descrição</label>
+              <textarea id="taskDescription" rows="3" placeholder="Contexto, instruções ou observações"></textarea>
+            </div>
+            <div class="span-2">
+              <label for="taskChecklist">Checklist</label>
+              <textarea id="taskChecklist" rows="4" placeholder="Um item por linha"></textarea>
+            </div>
+            <div class="span-2 button-row">
+              <button class="primary-btn" type="submit">Salvar tarefa</button>
+            </div>
+          </form>
+        </div>
 
-          <div class="card compact-card">
-            <form id="memberRoleForm" class="compact-grid">
-              <div>
+        <div class="card filters-card">
+          <div class="filters-grid">
+            <select id="filterStatus">
+              <option value="">Todos os status</option>
+              <option value="pendente">Pendente</option>
+              <option value="andamento">Em andamento</option>
+              <option value="concluido">Concluído</option>
+            </select>
+            <select id="filterPriority">
+              <option value="">Todas as prioridades</option>
+              <option value="baixa">Baixa</option>
+              <option value="media">Média</option>
+              <option value="alta">Alta</option>
+            </select>
+            <select id="filterType">
+              <option value="">Todos os tipos</option>
+              <option value="prova">Prova</option>
+              <option value="trabalho">Trabalho</option>
+              <option value="atividade">Atividade</option>
+              <option value="apresentacao">Apresentação</option>
+              <option value="estudo">Estudo</option>
+            </select>
+            <input id="filterSearch" type="search" placeholder="Buscar por título, matéria ou descrição">
+          </div>
+        </div>
+
+        <div id="taskList" class="task-grid"></div>
+      </section>
+
+      <section class="view" id="view-agenda">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Agenda</p>
+            <h3>Próximos 30 dias</h3>
+          </div>
+        </div>
+        <div id="agendaList" class="stack-list"></div>
+      </section>
+
+      <section class="view" id="view-announcements">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Avisos</p>
+            <h3>Mural do workspace</h3>
+          </div>
+          <button class="ghost-btn" id="announcementFormReset">Limpar formulário</button>
+        </div>
+
+        <div class="card form-card">
+          <form id="announcementForm" class="form-grid compact-grid">
+            <input type="hidden" id="announcementId">
+            <div>
+              <label for="announcementTitle">Título</label>
+              <input id="announcementTitle" required placeholder="Ex.: Mudança de horário">
+            </div>
+            <div>
+              <label for="announcementPinned">Destaque</label>
+              <select id="announcementPinned">
+                <option value="false">Normal</option>
+                <option value="true">Fixado</option>
+              </select>
+            </div>
+            <div class="span-2">
+              <label for="announcementContent">Mensagem</label>
+              <textarea id="announcementContent" rows="4" required placeholder="Escreva o aviso para a turma ou grupo"></textarea>
+            </div>
+            <div class="span-2 button-row">
+              <button class="primary-btn" type="submit">Publicar aviso</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="announcementList" class="stack-list"></div>
+      </section>
+
+      <section class="view" id="view-materials">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Materiais</p>
+            <h3>Links e referências</h3>
+          </div>
+          <button class="ghost-btn" id="materialFormReset">Limpar formulário</button>
+        </div>
+
+        <div class="card form-card">
+          <form id="materialForm" class="form-grid compact-grid">
+            <input type="hidden" id="materialId">
+            <div>
+              <label for="materialTitle">Título</label>
+              <input id="materialTitle" required placeholder="Ex.: Slides da apresentação">
+            </div>
+            <div>
+              <label for="materialType">Tipo</label>
+              <select id="materialType">
+                <option value="link">Link</option>
+                <option value="pdf">PDF</option>
+                <option value="slides">Slides</option>
+                <option value="documento">Documento</option>
+                <option value="video">Vídeo</option>
+              </select>
+            </div>
+            <div class="span-2">
+              <label for="materialUrl">URL</label>
+              <input id="materialUrl" type="url" required placeholder="https://...">
+            </div>
+            <div class="span-2">
+              <label for="materialDescription">Descrição</label>
+              <textarea id="materialDescription" rows="3" placeholder="Observações ou contexto"></textarea>
+            </div>
+            <div class="span-2 button-row">
+              <button class="primary-btn" type="submit">Salvar material</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="materialList" class="stack-list"></div>
+      </section>
+
+      <section class="view" id="view-members">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Membros</p>
+            <h3>Pessoas do workspace</h3>
+          </div>
+        </div>
+
+        <div class="members-layout">
+          <div id="memberList" class="stack-list"></div>
+
+          <div class="card form-card sticky-card">
+            <h4>Gestão de papéis</h4>
+            <form id="memberRoleForm" class="form-grid compact-grid">
+              <div class="span-2">
                 <label for="memberSelect">Membro</label>
                 <select id="memberSelect"></select>
               </div>
               <div>
-                <label for="memberRole">Papel</label>
+                <label for="memberRole">Novo papel</label>
                 <select id="memberRole">
-                  <option value="member">Member</option>
+                  <option value="member">Membro</option>
                   <option value="admin">Admin</option>
                   <option value="owner">Owner</option>
                 </select>
               </div>
-              <div class="form-actions compact-actions">
+              <div class="button-row align-end">
                 <button class="primary-btn" type="submit">Atualizar papel</button>
                 <button class="ghost-btn" id="removeMemberBtn" type="button">Remover membro</button>
               </div>
             </form>
           </div>
+        </div>
+      </section>
 
-          <div id="memberList" class="stack-list"></div>
-        </section>
-
-        <section class="view" id="view-workspace">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">Gerenciamento</p>
-              <h3>Workspaces</h3>
-            </div>
+      <section class="view" id="view-workspace">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Workspace</p>
+            <h3>Criação, entrada e gestão</h3>
           </div>
+        </div>
 
-          <div class="double-grid">
-            <div class="card">
-              <h3>Criar workspace</h3>
-              <form id="workspaceForm" class="form-grid compact-grid top-gap">
+        <div class="workspace-layout">
+          <div class="stack-list">
+            <div class="card form-card">
+              <h4>Criar workspace</h4>
+              <form id="workspaceForm" class="form-grid compact-grid">
                 <div>
                   <label for="workspaceName">Nome</label>
-                  <input id="workspaceName" required placeholder="Ex.: Turma 2º B">
+                  <input id="workspaceName" required placeholder="Ex.: Turma 2ºB">
                 </div>
                 <div>
                   <label for="workspaceSchool">Escola</label>
-                  <input id="workspaceSchool" placeholder="Ex.: Colégio Alfa">
+                  <input id="workspaceSchool" placeholder="Nome da escola">
                 </div>
                 <div>
                   <label for="workspaceType">Tipo</label>
                   <select id="workspaceType">
-                    <option value="individual">Individual</option>
                     <option value="grupo">Grupo</option>
                     <option value="turma">Turma</option>
+                    <option value="individual">Individual</option>
                   </select>
                 </div>
-                <div class="form-actions compact-actions">
+                <div class="button-row align-end">
                   <button class="primary-btn" type="submit">Criar workspace</button>
                 </div>
               </form>
             </div>
 
-            <div class="card">
-              <h3>Entrar por código</h3>
-              <form id="joinWorkspaceForm" class="form-grid compact-grid top-gap">
-                <div>
-                  <label for="inviteCodeInput">Código</label>
-                  <input id="inviteCodeInput" required placeholder="Ex.: ABC123">
-                </div>
-                <div class="form-actions compact-actions">
-                  <button class="primary-btn" type="submit">Entrar</button>
-                </div>
+            <div class="card form-card">
+              <h4>Entrar com código</h4>
+              <form id="joinWorkspaceForm" class="inline-form">
+                <input id="inviteCodeInput" placeholder="Digite o código" maxlength="6" autocomplete="off" required>
+                <button class="primary-btn" type="submit">Entrar</button>
               </form>
             </div>
+
+            <div id="workspaceList" class="stack-list"></div>
           </div>
 
-          <div class="card">
-            <div class="card-head">
-              <h3>Lista de workspaces</h3>
-              <button class="ghost-btn" id="regenerateInviteBtn" type="button">Gerar novo código</button>
-            </div>
-            <div id="workspaceList" class="stack-list top-gap"></div>
-          </div>
-        </section>
-
-        <section class="view" id="view-settings">
-          <div class="section-head">
-            <div>
-              <p class="eyebrow">Conta e projeto</p>
-              <h3>Configurações</h3>
-            </div>
-          </div>
-
-          <div class="double-grid">
-            <article class="card">
-              <h3>Seu perfil</h3>
-              <form id="profileForm" class="form-grid compact-grid top-gap">
-                <div>
-                  <label for="profileName">Nome</label>
-                  <input id="profileName" required>
-                </div>
-                <div>
-                  <label for="profileEmail">Email</label>
-                  <input id="profileEmail" disabled>
-                </div>
-                <div class="form-actions compact-actions">
-                  <button class="primary-btn" type="submit">Salvar perfil</button>
-                </div>
-              </form>
-            </article>
-
-            <article class="card">
-              <h3>Status de conexão</h3>
-              <div class="status-grid top-gap">
-                <div class="status-box">
-                  <span>Supabase</span>
-                  <strong id="supabaseStatus">Aguardando configuração</strong>
-                </div>
-                <div class="status-box">
-                  <span>Usuário</span>
-                  <strong id="userStatus">Desconectado</strong>
-                </div>
-                <div class="status-box">
-                  <span>Workspace atual</span>
-                  <strong id="workspaceStatus">Nenhum</strong>
-                </div>
+          <div class="card form-card sticky-card">
+            <h4>Configurações do workspace atual</h4>
+            <form id="workspaceSettingsForm" class="form-grid compact-grid">
+              <div>
+                <label for="workspaceSettingsName">Nome</label>
+                <input id="workspaceSettingsName" placeholder="Nome do workspace">
               </div>
-            </article>
+              <div>
+                <label for="workspaceSettingsSchool">Escola</label>
+                <input id="workspaceSettingsSchool" placeholder="Escola">
+              </div>
+              <div>
+                <label for="workspaceSettingsType">Tipo</label>
+                <select id="workspaceSettingsType">
+                  <option value="grupo">Grupo</option>
+                  <option value="turma">Turma</option>
+                  <option value="individual">Individual</option>
+                </select>
+              </div>
+              <div>
+                <label for="workspaceSettingsInvite">Código</label>
+                <input id="workspaceSettingsInvite" readonly>
+              </div>
+              <div class="span-2 button-row wrap">
+                <button class="primary-btn" type="submit">Salvar alterações</button>
+                <button class="ghost-btn" id="copyInviteBtn" type="button">Copiar código</button>
+                <button class="ghost-btn" id="regenerateInviteBtn" type="button">Gerar novo código</button>
+                <button class="ghost-btn danger" id="leaveWorkspaceBtn" type="button">Sair do workspace</button>
+                <button class="ghost-btn danger" id="deleteWorkspaceBtn" type="button">Excluir workspace</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="view" id="view-account">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">Conta</p>
+            <h3>Perfil e segurança</h3>
+          </div>
+        </div>
+
+        <div class="account-layout">
+          <div class="card form-card">
+            <h4>Perfil</h4>
+            <form id="profileForm" class="form-grid compact-grid">
+              <div>
+                <label for="profileName">Nome</label>
+                <input id="profileName" required>
+              </div>
+              <div>
+                <label for="profileEmail">Email</label>
+                <input id="profileEmail" readonly>
+              </div>
+              <div class="span-2 button-row">
+                <button class="primary-btn" type="submit">Salvar perfil</button>
+              </div>
+            </form>
           </div>
 
-          <article class="card">
-            <h3>O que ainda falta</h3>
-            <ul class="todo-list" id="todoList">
-              <li>Notificações por email e push.</li>
-              <li>Upload de arquivos com Supabase Storage.</li>
-              <li>Painel de professor e aprovação de tarefas.</li>
-              <li>Histórico de auditoria e comentários por tarefa.</li>
-              <li>Plano de assinatura e cobrança.</li>
-              <li>PWA e modo offline.</li>
-            </ul>
-          </article>
-        </section>
-      </main>
-    </section>
-  </div>
+          <div class="card form-card">
+            <h4>Senha</h4>
+            <form id="passwordForm" class="form-grid compact-grid">
+              <div>
+                <label for="newPassword">Nova senha</label>
+                <input id="newPassword" type="password" minlength="6" placeholder="Mínimo de 6 caracteres" required>
+              </div>
+              <div>
+                <label for="newPasswordConfirm">Confirmar senha</label>
+                <input id="newPasswordConfirm" type="password" minlength="6" placeholder="Repita a nova senha" required>
+              </div>
+              <div class="span-2 button-row">
+                <button class="primary-btn" type="submit">Atualizar senha</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+  </section>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/supabase-client.js"></script>
   <script src="assets/js/app.js"></script>

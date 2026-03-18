@@ -1,6 +1,6 @@
 window.CLASSBOARD_CONFIG = {
-  SUPABASE_URL: 'https://wtnvkvbotzijzwkssxga.supabase.co',
-  SUPABASE_ANON_KEY: 'sb_publishable_3jxlRnppR1mJBi4TaR4JTw_EI0_O6xH',
+  SUPABASE_URL: 'https://SEU-PROJETO.supabase.co',
+  SUPABASE_ANON_KEY: 'COLE_AQUI_SUA_CHAVE_PUBLICA',
   APP_NAME: 'ClassBoard',
-  APP_VERSION: 'v0.4',
+  APP_VERSION: '1.0.0',
 };
