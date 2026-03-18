@@ -1,9 +1,9 @@
 (function () {
   const cfg = window.CLASSBOARD_CONFIG || {};
   const hasValidConfig = typeof cfg.SUPABASE_URL === 'string'
-    && cfg.SUPABASE_URL.startsWith('https://wtnvkvbotzijzwkssxga.supabase.co')
+    && cfg.SUPABASE_URL.startsWith('https://')
     && typeof cfg.SUPABASE_ANON_KEY === 'string'
-    && !cfg.SUPABASE_ANON_KEY.includes('sb_publishable_3jxlRnppR1mJBi4TaR4JTw_EI0_O6xH');
+    && !cfg.SUPABASE_ANON_KEY.includes('COLE_AQUI');
 
   window.classboardSupabase = {
     client: null,
